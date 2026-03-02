@@ -8,7 +8,7 @@ const CONFIG = {
     maxSize: 40,
     neighborLinks: 3,
     maxSpawnPerTrigger: 10,
-    fps: 30, // Targets roughly 30fps for processing
+    fps: 30,
 }
 
 // --- STATE ---
@@ -70,11 +70,10 @@ window.onOpenCvReady = () => {
     console.log('OpenCV.js is ready.');
 };
 
-// Check if CV already loaded (async script might finish before main.js)
+// Check CV load
 if (typeof cv !== 'undefined' && cv.onRuntimeInitialized) {
     onOpenCvReady();
 } else {
-    // If we're using the async script tag, we need to poll or use the callback
     let checkCv = setInterval(() => {
         if (typeof cv !== 'undefined' && cv.Mat) {
             window.onOpenCvReady();
@@ -142,7 +141,7 @@ function processFrame() {
     if (!state.isRunning || !state.cvReady) return;
 
     // 1. Capture current frame
-    // We flip horizontally for the "natural" feel like the python script
+    // flip horizontally
     state.ctx.save();
     state.ctx.scale(-1, 1);
     state.ctx.drawImage(state.video, -state.width, 0, state.width, state.height);

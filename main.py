@@ -82,12 +82,10 @@ def run_live_tracked_effect():
             # --- RENDERING ---
             coords = [tp.pos for tp in active]
             # Draw Links
-            # Changed 'p' to 'pt' here to avoid overwriting the PyAudio object 'p'
             for i, pt in enumerate(coords):
                 # Simple optimization: only link to nearby points in the list
                 for j in range(max(0, i-neighbor_links), min(len(coords), i+neighbor_links)):
                     if i != j:
-                        # Use pt instead of p
                         cv2.line(frame, tuple(pt.astype(int)), tuple(coords[j].astype(int)), (255, 200, 200), 1)
 
             # Draw Inversion Boxes
