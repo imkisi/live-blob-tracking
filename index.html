@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Blob Tracker | Kinetic Audio Visualization</title>
+    <meta
+      name="description"
+      content="A real-time blob tracking effect triggered by audio amplitude. Built with OpenCV.js and Web APIs."
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- OpenCV.js -->
+    <script
+      async
+      src="https://docs.opencv.org/4.x/opencv.js"
+      type="text/javascript"
+    ></script>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="logo">
+          <span class="dot"></span>
+          <h1>BLOB TRACKER <span class="v">v1.0</span></h1>
+        </div>
+        <div class="status-badge" id="cv-status">Initializing CV...</div>
+      </header>
+
+      <main>
+        <div class="video-container">
+          <video id="videoElement" autoplay playsinline muted></video>
+          <canvas id="canvasOutput"></canvas>
+          <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Accessing Camera & Audio...</p>
+          </div>
+        </div>
+
+        <aside class="controls-panel">
+          <section>
+            <h3>SENSITIVITY</h3>
+            <div class="control-group">
+              <label>Audio Threshold <span id="thresholdVal">2000</span></label>
+              <input
+                type="range"
+                id="threshold"
+                min="0"
+                max="10000"
+                value="2000"
+                step="100"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h3>VISUALS</h3>
+            <div class="control-group">
+              <label>Point Life (Frames) <span id="lifeVal">15</span></label>
+              <input type="range" id="life" min="5" max="60" value="15" />
+            </div>
+            <div class="control-group">
+              <label>Box Size <span id="sizeVal">30</span></label>
+              <input type="range" id="boxSize" min="10" max="100" value="30" />
+            </div>
+            <div class="control-group">
+              <label>Max Spawn <span id="spawnVal">10</span></label>
+              <input type="range" id="maxSpawn" min="1" max="50" value="10" />
+            </div>
+          </section>
+
+          <section class="stats">
+            <div class="stat-item">
+              <span class="label">ACTIVE BLOBS</span>
+              <span class="value" id="blobCount">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">AMPLITUDE</span>
+              <div class="amp-meter">
+                <div id="ampBar" class="amp-fill"></div>
+              </div>
+            </div>
+          </section>
+
+          <button id="startButton" class="primary-btn">START TRACKING</button>
+        </aside>
+      </main>
+
+      <footer>
+        <p>Inspired by main.py &bull; Built with Google Antigravity</p>
+      </footer>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
