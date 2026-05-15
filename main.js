@@ -25,7 +25,8 @@ let state = {
     cvReady: false,
     width: 640,
     height: 480,
-    loopId: null
+    loopId: null,
+    isMirrored: false
 }
 
 class TrackedPoint {
@@ -85,11 +86,23 @@ if (typeof cv !== 'undefined' && cv.onRuntimeInitialized) {
 // --- INITIALIZATION ---
 async function initMedia() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: state.width, height: state.height }, 
+        const constraints = {
+            video: { 
+                width: { ideal: state.width }, 
+                height: { ideal: state.height },
+                facingMode: { ideal: "environment" }
+            }, 
             audio: true 
-        });
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         
+        // Check if we are actually using the front camera to decide on mirroring
+        const videoTrack = stream.getVideoTracks()[0];
+        const settings = videoTrack.getSettings();
+        // Default to mirroring only if facingMode is explicitly 'user'
+        state.isMirrored = settings.facingMode === 'user';
+
         state.video = document.getElementById('videoElement');
         state.video.srcObject = stream;
         await state.video.play();
@@ -141,10 +154,13 @@ function processFrame() {
     if (!state.isRunning || !state.cvReady) return;
 
     // 1. Capture current frame
-    // flip horizontally
     state.ctx.save();
-    state.ctx.scale(-1, 1);
-    state.ctx.drawImage(state.video, -state.width, 0, state.width, state.height);
+    if (state.isMirrored) {
+        state.ctx.scale(-1, 1);
+        state.ctx.drawImage(state.video, -state.width, 0, state.width, state.height);
+    } else {
+        state.ctx.drawImage(state.video, 0, 0, state.width, state.height);
+    }
     state.ctx.restore();
 
     let frame = cv.imread(state.canvas);
@@ -215,8 +231,12 @@ function processFrame() {
     // 4. Rendering to Canvas
     // Clear and redraw background
     state.ctx.save();
-    state.ctx.scale(-1, 1);
-    state.ctx.drawImage(state.video, -state.width, 0, state.width, state.height);
+    if (state.isMirrored) {
+        state.ctx.scale(-1, 1);
+        state.ctx.drawImage(state.video, -state.width, 0, state.width, state.height);
+    } else {
+        state.ctx.drawImage(state.video, 0, 0, state.width, state.height);
+    }
     state.ctx.restore();
 
     // Draw Links
